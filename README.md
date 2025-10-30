@@ -85,4 +85,4 @@ The `Masterfile_mumbai_bus_stops.csv` file is a filtered version of the file nam
 
 ## 👨‍💻 Author
 
-* **Moiz Arsiwala** - [arsiwalamoiz24](https://github.com/arsiwalamoiz24)
+* **Moiz Arsiwala** - [arsiwalamoiz24](https://github.com/arsiwalamoiz24)  - Email: moiz.arsiwala24@gmail.com
