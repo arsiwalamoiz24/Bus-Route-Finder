@@ -23,9 +23,9 @@ public class  database{
     private mapregion overviewMap;
 
     public database() {
-        loadStopsFromCSV("Masterfile_mumbai_bus_stops.csv");
-        loadRoutesFromCSV("(TEMPERARY)bus_routes_fully_corrected.csv");
-        loadMapRegionsFromCSV("map_regions.csv");
+        loadStopsFromCSV("CSV_FILES/Masterfile_mumbai_bus_stops.csv");
+        loadRoutesFromCSV("CSV_FILES/(TEMPERARY)bus_routes_fully_corrected.csv");
+        loadMapRegionsFromCSV("CSV_FILES/map_regions.csv");
         buildSortedMaps();
 
         mapregion largestRegionSoFar = null;

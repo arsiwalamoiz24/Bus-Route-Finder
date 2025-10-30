@@ -15,7 +15,7 @@ public class MainApp extends JFrame {
 
     public home homeFrame;
     JSplitPane splitPane;
-    ImageIcon bus = new ImageIcon("bus icon.png");
+    ImageIcon bus = new ImageIcon("assets/bus icon.png");
     public MainApp(home homeFrame, database dataManager, BusStop start, BusStop end) {
         this.homeFrame = homeFrame;
         

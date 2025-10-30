@@ -9,8 +9,8 @@ import javax.swing.*;
 
 public class home extends JFrame {
 
-    ImageIcon bus = new ImageIcon("bus icon.png");
-    ImageIcon background = new ImageIcon("background.png");
+    ImageIcon bus = new ImageIcon("assets/bus icon.png");
+    ImageIcon background = new ImageIcon("assets/background.png");
     JPanel toppanel;
     JLabel title, names, fromtext, totext;
     JPanel inputs, inputback, footer, from, from2, fromback, to, to2, toback;
