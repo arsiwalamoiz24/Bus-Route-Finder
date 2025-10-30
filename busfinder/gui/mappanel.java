@@ -1,8 +1,8 @@
 package busfinder.gui;
 
 import busfinder.data.BusStop;
-import busfinder.data.mapregion;
 import busfinder.data.database;
+import busfinder.data.mapregion;
 import busfinder.helpful.CoordinateConverter;
 import busfinder.helpful.routeresult;
 import java.awt.BasicStroke;
@@ -61,10 +61,6 @@ public class mappanel extends JPanel {
                 visited.put(routeName, new HashMap<>());
             }
             PathNode startNode = new PathNode(start, null, routeName, 0, 0.0);
-
-            if (startNode.stop.getName().contains(",")) {
-                System.out.println("ADDING Node: [" + startNode.stop.getName() + "], HashCode: " + startNode.stop.hashCode());
-            }
             
             pq.add(startNode);
             visited.get(routeName).put(start, startNode);
@@ -72,16 +68,10 @@ public class mappanel extends JPanel {
 
         PathNode destinationNode = null;
 
+
         while (!pq.isEmpty()) { // basically we check for every single route passing through the current node and the routes taht are passing through the nodes on the the routes passing through evry route
             PathNode currentNode = pq.poll(); //gets me hightest priority element
 
-            if (currentNode.stop.getName().contains(",")) {
-                System.out.println("PROCESSING Stop: [" + currentNode.stop.getName() + "], HashCode: " + currentNode.stop.hashCode());
-            }
-
-            if (currentNode.stop.getName().contains(",")) { // Check if the current stop name has a comma
-                System.out.println("Processing node with comma: [" + currentNode.stop.getName() + "] on route [" + currentNode.route + "]");
-            }
 
             if (currentNode.stop.equals(end)) {
                 destinationNode = currentNode;
@@ -98,9 +88,6 @@ public class mappanel extends JPanel {
                     double dist = database.calculateDistance(currentNode.stop.lat, currentNode.stop.lon, nextStop.lat, nextStop.lon);
                     double newCost = currentNode.cost + dist;
 
-                    if (nextStop.getName().contains(",")) {
-                        System.out.println("  Checking neighbor with comma: [" + nextStop.getName() + "] from [" + currentNode.stop.getName() + "]");
-                    }
 
                     Map<BusStop, PathNode> routeVisited = visited.get(currentNode.route); // creates map of stop of the current bus route
                     PathNode existing = routeVisited.get(nextStop); //checking if the nextstop was already found
@@ -115,9 +102,6 @@ public class mappanel extends JPanel {
             for (String newRoute : currentNode.stop.routes) {
                 if (!newRoute.equals(currentNode.route)) { //
 
-                    if (currentNode.stop.getName().contains(",")) {
-                        System.out.println("  Considering transfer at comma-stop [" + currentNode.stop.getName() + "] to route [" + newRoute + "]");
-                    }
 
                     if (!visited.containsKey(newRoute)) {
                         visited.put(newRoute, new HashMap<>());
