@@ -6,7 +6,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 
 public class home extends JFrame implements MouseMotionListener {
@@ -114,16 +116,29 @@ public class home extends JFrame implements MouseMotionListener {
         button = new JButton("Find Route");
         button.setBackground(new Color(40, 40, 90));
         button.setForeground(new Color(255, 255, 255));
-        ;
         button.setBounds(100, 245, 150, 40);
         button.setFocusable(false);
 
         dataManager = new database();
         List<BusStop> stops = dataManager.getAllStops();
-        List<BusStop> sortedStops = new ArrayList<>(stops);
-        sortedStops.sort(java.util.Comparator.comparing(BusStop::getName));
-        startCombo = new busfinder.helpful.SearchableComboBox(sortedStops);
-        endCombo = new busfinder.helpful.SearchableComboBox(sortedStops);
+
+        // Deduplicate the dropdown: stops like "Dadar #1", "Dadar #2" etc. are the
+        // same physical location with a disambiguation suffix added during data import.
+        // We collapse them to one entry per base name, keeping whichever copy is on
+        // the most routes (so the pathfinder has the best connectivity).
+        Map<String, BusStop> dedupedMap = new LinkedHashMap<>();
+        for (BusStop stop : stops) {
+            String base = getBaseName(stop.getName());
+            BusStop existing = dedupedMap.get(base);
+            if (existing == null || stop.routes.size() > existing.routes.size()) {
+                dedupedMap.put(base, stop);
+            }
+        }
+        List<BusStop> dedupedStops = new ArrayList<>(dedupedMap.values());
+        dedupedStops.sort(java.util.Comparator.comparing(s -> getBaseName(s.getName())));
+
+        startCombo = new busfinder.helpful.SearchableComboBox(dedupedStops);
+        endCombo   = new busfinder.helpful.SearchableComboBox(dedupedStops);
         startCombo.setPreferredSize(new Dimension(300, 20));
         endCombo.setPreferredSize(new Dimension(300, 20));
         from2.add(startCombo, BorderLayout.CENTER);
@@ -165,6 +180,19 @@ public class home extends JFrame implements MouseMotionListener {
 
     public static void main(String[] args) {
         new home();
+    }
+
+    /** Strips disambiguation suffix like " (Bandra) #3" → base stop name. */
+    private static String getBaseName(String name) {
+        // Remove " #N" suffix
+        int hashIdx = name.lastIndexOf(" #");
+        if (hashIdx > 0) name = name.substring(0, hashIdx).trim();
+        // Remove " (Area)" suffix
+        if (name.endsWith(")")) {
+            int parenIdx = name.lastIndexOf(" (");
+            if (parenIdx > 0) name = name.substring(0, parenIdx).trim();
+        }
+        return name;
     }
 
 }

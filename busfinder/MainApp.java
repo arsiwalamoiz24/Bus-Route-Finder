@@ -6,6 +6,7 @@ import busfinder.gui.mappanel;
 import busfinder.gui.routedetailspanel;
 import busfinder.helpful.routeresult;
 import java.awt.BorderLayout;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -16,14 +17,16 @@ public class MainApp extends JFrame {
     public home homeFrame;
     JSplitPane splitPane;
     ImageIcon bus = new ImageIcon("assets/bus icon.png");
+
     public MainApp(home homeFrame, database dataManager, BusStop start, BusStop end) {
         this.homeFrame = homeFrame;
-        
+
         this.setTitle("MUMBAI BUS ROUTE NAVIGATOR");
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(bus.getImage());
-        routedetailspanel detailsPanel = new routedetailspanel(this); 
+
+        routedetailspanel detailsPanel = new routedetailspanel(this);
         mappanel mapPanel = new mappanel(dataManager, detailsPanel);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -38,25 +41,28 @@ public class MainApp extends JFrame {
 
         detailsPanel.showLoading();
 
-        javax.swing.SwingWorker<routeresult, Void> worker = new javax.swing.SwingWorker<routeresult, Void>() {
+        javax.swing.SwingWorker<List<routeresult>, Void> worker =
+                new javax.swing.SwingWorker<List<routeresult>, Void>() {
             @Override
-            protected routeresult doInBackground() throws Exception {
-                return mapPanel.findPathWithTransfers(start, end);
+            protected List<routeresult> doInBackground() throws Exception {
+                return mapPanel.findTopThreePaths(start, end);
             }
 
             @Override
             protected void done() {
                 try {
-                    routeresult result = get();
-                    if (result != null) {
-                        mapPanel.displayRoute(result);
-                        detailsPanel.updateBusJourneyInfo(result);
+                    List<routeresult> results = get();
+                    if (results != null && !results.isEmpty()) {
+                        // Show the best route on the map
+                        mapPanel.displayRoute(results.get(0));
+                        // Show all options in the details panel
+                        detailsPanel.showRouteOptions(results);
                     } else {
-                        detailsPanel.updateBusJourneyInfo(null);
+                        detailsPanel.showRouteOptions(null);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    detailsPanel.updateBusJourneyInfo(null);
+                    detailsPanel.showRouteOptions(null);
                 }
             }
         };
