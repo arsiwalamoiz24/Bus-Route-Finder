@@ -1,5 +1,19 @@
+# Compiled Java class files
 *.class
+
+# IDE and editor configs
+.vscode/
 .idea/
 *.iml
-.vscode/
-nbproject/
+
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Python scripts and cache (data pipeline, not part of the app)
+*.py
+*.json
+
+# OS files
+.DS_Store
+Thumbs.db

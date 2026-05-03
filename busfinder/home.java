@@ -3,11 +3,13 @@ package busfinder;
 import busfinder.data.BusStop;
 import busfinder.data.database;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-public class home extends JFrame {
+public class home extends JFrame implements MouseMotionListener {
 
     ImageIcon bus = new ImageIcon("assets/bus icon.png");
     ImageIcon background = new ImageIcon("assets/background.png");
@@ -31,7 +33,8 @@ public class home extends JFrame {
         toppanel.setBackground(new Color(255, 204, 51));
 
         title = new JLabel("WHERE TO?");
-        title.setBounds(250 - background.getIconWidth() / 2, 140 - background.getIconHeight() / 2, background.getIconWidth(), background.getIconHeight() + 200);
+        title.setBounds(250 - background.getIconWidth() / 2, 140 - background.getIconHeight() / 2,
+                background.getIconWidth(), background.getIconHeight() + 200);
         title.setIcon(background);
         title.setHorizontalTextPosition(JLabel.CENTER);
         title.setVerticalTextPosition(JLabel.TOP);
@@ -69,7 +72,7 @@ public class home extends JFrame {
         totext.setFont(new Font("Times New Roman", Font.BOLD, 22));
         inputs.add(totext);
 
-        names = new JLabel("Developed by: Moiz Arsiwala & Aditya Anchan");
+        names = new JLabel("Developed by: Moiz Arsiwala");
         names.setPreferredSize(new Dimension(300, 40));
         names.setForeground(Color.white);
         names.setFont(new Font("sans serif", Font.ITALIC, 18));
@@ -109,25 +112,18 @@ public class home extends JFrame {
         inputs.add(toback);
 
         button = new JButton("Find Route");
+        button.setBackground(new Color(40, 40, 90));
+        button.setForeground(new Color(255, 255, 255));
+        ;
         button.setBounds(100, 245, 150, 40);
         button.setFocusable(false);
 
         dataManager = new database();
         List<BusStop> stops = dataManager.getAllStops();
         List<BusStop> sortedStops = new ArrayList<>(stops);
-        for (int i = 0; i < sortedStops.size() - 1; i++) {
-            for (int j = 0; j < sortedStops.size() - i - 1; j++) {
-                BusStop stop1 = sortedStops.get(j);
-                BusStop stop2 = sortedStops.get(j + 1);
-                if (stop1.getName().compareTo(stop2.getName()) > 0) {
-                    BusStop temp = sortedStops.get(j);
-                    sortedStops.set(j, sortedStops.get(j + 1));
-                    sortedStops.set(j + 1, temp);
-                }
-            }
-        }
-        startCombo = new JComboBox<>(sortedStops.toArray(new BusStop[0]));
-        endCombo = new JComboBox<>(sortedStops.toArray(new BusStop[0]));
+        sortedStops.sort(java.util.Comparator.comparing(BusStop::getName));
+        startCombo = new busfinder.helpful.SearchableComboBox(sortedStops);
+        endCombo = new busfinder.helpful.SearchableComboBox(sortedStops);
         startCombo.setPreferredSize(new Dimension(300, 20));
         endCombo.setPreferredSize(new Dimension(300, 20));
         from2.add(startCombo, BorderLayout.CENTER);
@@ -137,7 +133,8 @@ public class home extends JFrame {
             BusStop start = (BusStop) startCombo.getSelectedItem();
             BusStop end = (BusStop) endCombo.getSelectedItem();
             if (start.equals(end)) {
-                JOptionPane.showMessageDialog(this, "Please Select different start and end stops", "Invalid Selection", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please Select different start and end stops", "Invalid Selection",
+                        JOptionPane.ERROR_MESSAGE);
             }
             if (start != null && end != null && !start.equals(end)) {
                 this.setVisible(false);
@@ -152,9 +149,22 @@ public class home extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.setResizable(false);
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'mouseDragged'");
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        // Unimplemented method 'mouseMoved'
     }
 
     public static void main(String[] args) {
         new home();
     }
+
 }

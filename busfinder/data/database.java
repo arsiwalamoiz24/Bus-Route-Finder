@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
-public class  database{
+public class database {
 
     private final List<BusStop> allStops = new ArrayList<>();
     private final Map<String, BusStop> stopMap = new HashMap<>();
@@ -23,8 +23,8 @@ public class  database{
     private mapregion overviewMap;
 
     public database() {
-        loadStopsFromCSV("CSV_FILES/Masterfile_mumbai_bus_stops.csv");
-        loadRoutesFromCSV("CSV_FILES/(TEMPERARY)bus_routes_fully_corrected.csv");
+        loadStopsFromCSV("CSV_FILES/bus_stops.csv");
+        loadRoutesFromCSV("CSV_FILES/bus_routes.csv");
         loadMapRegionsFromCSV("CSV_FILES/map_regions.csv");
         buildSortedMaps();
 
@@ -64,9 +64,6 @@ public class  database{
                 double lat = Double.parseDouble(latStr);
                 double lon = Double.parseDouble(lonStr);
                 BusStop stop = new BusStop(name, lat, lon);
-                if (name.contains(",")) {
-                    System.out.println("Stop: [" + name + "], hashcodee: " + stop.hashCode());
-                }
                 allStops.add(stop);
                 stopMap.put(name.toUpperCase(), stop);
             }
@@ -100,6 +97,9 @@ public class  database{
                     }
                 }
                 busStopName = busStopName.trim();
+                if (busStopName.startsWith("\"") && busStopName.endsWith("\"")) {
+                    busStopName = busStopName.substring(1, busStopName.length() - 1);
+                }
                 BusStop stop = stopMap.get(busStopName.toUpperCase());
                 if (stop != null) {
                     List<RouteEntry> stopsForThisBus = tempRoutes.computeIfAbsent(busNumber, k -> new ArrayList<>());
@@ -166,7 +166,8 @@ public class  database{
                 } catch (NumberFormatException nfe) {
                     System.out.println("Error parsing number in map region line: " + line + " - " + nfe.getMessage());
                 } catch (ArrayIndexOutOfBoundsException aioobe) {
-                    System.out.println("Error accessing data in map region line (not enough columns?): " + line + " - " + aioobe.getMessage());
+                    System.out.println("Error accessing data in map region line (not enough columns?): " + line + " - "
+                            + aioobe.getMessage());
                 }
             }
         } catch (IOException e) {
@@ -177,20 +178,7 @@ public class  database{
 
     private void buildSortedMaps() {
         List<mapregion> listToSort = new ArrayList<>(mapRegions);
-        int listSize = listToSort.size();
-        for (int i = 0; i < listSize - 1; i++) {
-            for (int j = 0; j < listSize - i - 1; j++) {
-                mapregion region1 = listToSort.get(j);
-                mapregion region2 = listToSort.get(j + 1);
-                double area1 = (region1.maxLat - region1.minLat) * (region1.maxLon - region1.minLon);
-                double area2 = (region2.maxLat - region2.minLat) * (region2.maxLon - region2.minLon);
-                if (area1 > area2) {
-                    mapregion temp = listToSort.get(j);
-                    listToSort.set(j, listToSort.get(j + 1));
-                    listToSort.set(j + 1, temp);
-                }
-            }
-        }
+        listToSort.sort(java.util.Comparator.comparingDouble(r -> (r.maxLat - r.minLat) * (r.maxLon - r.minLon)));
         this.sortedMapRegions = listToSort;
     }
 
@@ -229,7 +217,7 @@ public class  database{
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }

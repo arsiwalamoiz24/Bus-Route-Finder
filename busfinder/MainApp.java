@@ -36,12 +36,30 @@ public class MainApp extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
 
-        routeresult result = mapPanel.findPathWithTransfers(start, end);
-        if (result != null) {
-            mapPanel.displayRoute(result);
-            detailsPanel.updateBusJourneyInfo(result);
-        } else {
-            detailsPanel.updateBusJourneyInfo(null);
-        }
+        detailsPanel.showLoading();
+
+        javax.swing.SwingWorker<routeresult, Void> worker = new javax.swing.SwingWorker<routeresult, Void>() {
+            @Override
+            protected routeresult doInBackground() throws Exception {
+                return mapPanel.findPathWithTransfers(start, end);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    routeresult result = get();
+                    if (result != null) {
+                        mapPanel.displayRoute(result);
+                        detailsPanel.updateBusJourneyInfo(result);
+                    } else {
+                        detailsPanel.updateBusJourneyInfo(null);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    detailsPanel.updateBusJourneyInfo(null);
+                }
+            }
+        };
+        worker.execute();
     }
 }

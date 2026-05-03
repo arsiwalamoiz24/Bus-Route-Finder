@@ -67,6 +67,24 @@ public class routedetailspanel extends JPanel {
         this.setPreferredSize(new Dimension(350, 900));
     }
 
+    public void showLoading() {
+        detailsPanel.removeAll();
+        JLabel loadingLabel = new JLabel("Calculating route...");
+        loadingLabel.setFont(new Font("Times new Roman", Font.BOLD, 28));
+        loadingLabel.setForeground(new Color(40, 40, 90));
+        loadingLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        detailsPanel.add(loadingLabel);
+        
+        JLabel waitLabel = new JLabel("Please wait, this might take a moment.");
+        waitLabel.setFont(new Font("Times new Roman", Font.ITALIC, 18));
+        waitLabel.setForeground(Color.DARK_GRAY);
+        waitLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        detailsPanel.add(waitLabel);
+        
+        detailsPanel.revalidate();
+        detailsPanel.repaint();
+    }
+
     public void updateBusJourneyInfo(routeresult result) {
         detailsPanel.removeAll();
         if (result == null) {

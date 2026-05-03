@@ -10,7 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;   
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,17 +61,14 @@ public class mappanel extends JPanel {
                 visited.put(routeName, new HashMap<>());
             }
             PathNode startNode = new PathNode(start, null, routeName, 0, 0.0);
-            
             pq.add(startNode);
             visited.get(routeName).put(start, startNode);
         }
 
         PathNode destinationNode = null;
 
-
-        while (!pq.isEmpty()) { // basically we check for every single route passing through the current node and the routes taht are passing through the nodes on the the routes passing through evry route
-            PathNode currentNode = pq.poll(); //gets me hightest priority element
-
+        while (!pq.isEmpty()) {
+            PathNode currentNode = pq.poll();
 
             if (currentNode.stop.equals(end)) {
                 destinationNode = currentNode;
@@ -88,21 +85,18 @@ public class mappanel extends JPanel {
                     double dist = database.calculateDistance(currentNode.stop.lat, currentNode.stop.lon, nextStop.lat, nextStop.lon);
                     double newCost = currentNode.cost + dist;
 
-
-                    Map<BusStop, PathNode> routeVisited = visited.get(currentNode.route); // creates map of stop of the current bus route
-                    PathNode existing = routeVisited.get(nextStop); //checking if the nextstop was already found
+                    Map<BusStop, PathNode> routeVisited = visited.get(currentNode.route);
+                    PathNode existing = routeVisited.get(nextStop);
                     if (existing == null || newCost < existing.cost) {
                         PathNode nextnode = new PathNode(nextStop, currentNode, currentNode.route, currentNode.transfers, newCost);
-                        routeVisited.put(nextStop, nextnode); //updating the  visited map with a new better nextstop
-                        pq.add(nextnode); // adding 
+                        routeVisited.put(nextStop, nextnode);
+                        pq.add(nextnode);
                     }
                 }
             }
-            //considering transfers 
+
             for (String newRoute : currentNode.stop.routes) {
-                if (!newRoute.equals(currentNode.route)) { //
-
-
+                if (!newRoute.equals(currentNode.route)) {
                     if (!visited.containsKey(newRoute)) {
                         visited.put(newRoute, new HashMap<>());
                     }
@@ -280,9 +274,6 @@ public class mappanel extends JPanel {
         g2d.setStroke(new BasicStroke(3));
         g2d.setColor(Color.RED);
 
-        int imgWidth = currentMap.getImage().getWidth();
-        int imgHeight = currentMap.getImage().getHeight();
-
         for (List<BusStop> segment : currentRouteResult.segments) {
             for (int i = 0; i < segment.size() - 1; i++) {
                 BusStop from = segment.get(i);
@@ -296,6 +287,7 @@ public class mappanel extends JPanel {
                 }
             }
         }
+
         List<BusStop> specialStops = new ArrayList<>(currentRouteResult.majorStops);
 
         for (int i = 0; i < currentRouteResult.segments.size() - 1; i++) {
